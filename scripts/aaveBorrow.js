@@ -10,12 +10,17 @@ async function main() {
     const lendingPool = await getLendindPool(deployer)
     console.log(`LendingPool Address ${lendingPool.address}`)
     // deposit
+
     const wethTokenAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
     // approve function
     await approveERC20(wethTokenAddress, lendingPool.address, AMOUNT, deployer)
     console.log("Depositing...")
     await lendingPool.deposit(wethTokenAddress, AMOUNT, deployer, 0)
     console.log("Deposited...")
+    // borrow
+    // how much we have borrowed, how much we have in collateral, how much we can borrow
+    let { availableBorrowsETH, totalDebtETH } = await getBorrowedUser(lendingPool, deployer)
+    const daiPrice = await getDaiPrice()
 }
 
 async function getLendindPool(account) {
@@ -38,6 +43,25 @@ async function approveERC20(erc20Address, spenderAddress, amountToSpend, account
     const tx = await erc20Token.approve(spenderAddress, amountToSpend)
     await tx.wait(1)
     console.log("Approved!")
+}
+
+async function getBorrowedUser(lendingPool, account) {
+    const { totalCollateralETH, totalDebtETH, availableBorrowsETH } =
+        await lendingPool.getUserAccountData(account)
+    console.log(`You have ${totalCollateralETH} worth of ETH deposited`)
+    console.log(`You have ${totalDebtETH} worth of ETH borrowed`)
+    console.log(`You have ${availableBorrowsETH} worth of ETH`)
+    return { totalCollateralETH, totalDebtETH }
+}
+
+async function getDaiPrice() {
+    const daiEthPriceFeed = await ethers.getContractAt(
+        "AggregatorV3Interface",
+        "0x773616E4d11A78F511299002da57A0a94577F1f4"
+    )
+    const price = (await daiEthPriceFeed.latestRoundData())[1]
+    console.log(`The DAI/ETH Price is ${price.toString()}`)
+    return price
 }
 
 main().catch((error) => {
