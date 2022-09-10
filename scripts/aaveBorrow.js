@@ -48,11 +48,7 @@ async function getLendindPool(account) {
 }
 
 async function approveERC20(erc20Address, spenderAddress, amountToSpend, account) {
-    const erc20Token = await ethers.getContractAt(
-        "IERC20",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        account
-    )
+    const erc20Token = await ethers.getContractAt("IERC20", erc20Address, account)
     const tx = await erc20Token.approve(spenderAddress, amountToSpend)
     await tx.wait(1)
     console.log("Approved!")
