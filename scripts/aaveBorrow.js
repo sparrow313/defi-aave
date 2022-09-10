@@ -26,7 +26,7 @@ async function main() {
     console.log(`You can borrow ${amountDaiToBorrow} DAI`)
     const amountDaiToBorrowWei = ethers.utils.parseEther(amountDaiToBorrow.toString())
     // borrow Time !!!!!
-    const daiTokenAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+    const daiTokenAddress = "0x6b175474e89094c44da98b954eedeac495271d0f"
     await borrowDai(daiTokenAddress, lendingPool, amountDaiToBorrowWei, deployer)
 
     await getBorrowedUser(lendingPool, deployer)
